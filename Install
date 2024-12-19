@@ -1,0 +1,236 @@
+; Install script for Various AmIRC plugins
+; $VER: AmIPlug_Install 1.0 (25.09.2002) ©2002 Robin Cloutman <rycochet@rycochet.demon.co.uk>
+
+(set @default-dest (getenv "Vapor/AmIRC_LASTUSEDDIR"))
+
+;---------------------------------------------------------------------------
+;(if (= @language "english)
+;(
+	(set #setup-text "Checking system and application...")
+
+	(set #msg-abort
+	(cat "ERROR - Cannot find required files for installation!!!\n\n"
+	     "Please ensure you extracted the archive\n"
+	     "correctly!"
+	))
+
+	(set #msg-cpu
+	(cat "Which version of " @app-name " do you wish to install?"
+	))
+	(set #msg-cpu-help
+	(cat "Unless you have some reason to choose a different version, best leave\n"
+	     "this to the default version.\n\n"
+	     "(The 68000 version is safe for all cpu's)"
+	))
+
+	(set #msg-dest
+	(cat "Where is AmIRC Installed?\n"
+	     "(" @app-name " is installed relative to this)"
+	))
+	(set #msg-dest-help
+	(cat "This should be where AmIRC itself lives, as there may be may parts for this plugin.\n\n"
+	     @askdir-help
+	))
+
+	(set #msg-plugin
+	(cat "Installing " @app-name ".AmiPlug"
+	))
+	(set #msg-plugin-help
+	(cat "Just installing the plugin...\n\n"
+	     @copylib-help
+	))
+
+	(set #msg-readme
+	(cat "Installing " @app-name ".readme"
+	))
+	(set #msg-readme-help
+	(cat "Just installing the readme...\n\n"
+	     @copyfiles-help
+	))
+
+	(set #msg-data
+	(cat "Installing various data files"
+	))
+	(set #msg-data-help
+	(cat "These files are either required, or default values.\n\n"
+	     @copyfiles-help
+	))
+
+	(set #msg-rexx
+	(cat "Installing various ARexx files"
+	))
+	(set #msg-rexx-help
+	(cat "These files are either required, or examples.\n\n"
+	     @copyfiles-help
+	))
+
+	(set #msg-exit
+	(cat "Installation complete\n\n"
+	     @app-name " has been installed in " @default-dest "\n\n"
+	     "If you are currently using AmIRC, it will now be using the newly installed version."
+	))
+
+;)
+
+;=============================================================================
+
+(procedure p_file arg1 arg2 arg3
+	(if (= (exists arg1) true)
+		(if (>= arg2 arg3)
+			(
+				(set #file arg1)
+				true
+			)
+			false
+		)
+		false
+	)
+)
+
+;=============================================================================
+
+(welcome)
+
+(complete 0)
+
+(working #setup-text)
+
+(if (= (exists (cat "Plugins/" @app-name ".AmIPlug")) false)
+	(if (= (exists (cat "Plugins/" @app-name ".AmIPlug_020")) false)
+		(if (= (exists (cat "Plugins/" @app-name ".AmIPlug_040")) false)
+			(if (= (exists (cat "Plugins/" @app-name ".AmIPlug_060")) false)
+				(abort #msg-abort)
+			)
+		)
+	)
+)
+
+(if (= (database "cpu") "68060")(set #version 4)
+	(if (= (database "cpu") "68040")(set #version 3)
+		(if (= (database "cpu") "68030")(set #version 2)
+			(if (= (database "cpu") "68020")(set #version 1)
+				(set #version 0)
+			)
+		)
+	)
+)
+
+(complete 25)
+
+(if (>= @user-level 1)
+	(set @default-dest
+		(askdir
+			(prompt #msg-dest)
+			(help #msg-dest-help)
+			(default @default-dest)
+		)
+	)
+)
+
+(complete 50)
+
+(if (>= @user-level 1)
+	(set #version
+		(askchoice
+			(prompt #msg-cpu)
+			(help #msg-cpu-help)
+			(choices "68000" "68020" "68030" "68040" "68060")
+			(default #version)
+		)
+	)
+)
+
+(if (= (p_file (cat "Plugins/" @app-name ".AmIPlug_060") #version 4) false)
+	(if (= (p_file (cat "Plugins/" @app-name ".AmIPlug_040") #version 3) false)
+		(if (= (p_file (cat "Plugins/" @app-name ".AmIPlug_020") #version 1) false)
+			(if (= (set #file (cat "Plugins/" @app-name ".AmIPlug")) false)
+				(abort #msg-abort)
+			)
+		)
+	)
+)
+
+(set #plugin-dir (tackon @default-dest "Plugins"))
+(set #data-dir (tackon @default-dest "Plugins/Data"))
+(set #rexx-dir (tackon @default-dest "Rexx"))
+
+(complete 75)
+
+(copylib
+	(prompt #msg-plugin)
+	(help #msg-plugin-help)
+	(source #file)
+	(dest #plugin-dir)
+	(newname (cat @app-name ".AmIPlug"))
+	(if (>= @user-level 2)(confirm))
+	(optional force)
+	(nogauge)
+)
+
+(if (= (exists (cat @app-name ".readme")) true)
+	(copyfiles
+		(prompt #msg-readme)
+		(help #msg-readme-help)
+		(source (cat @app-name ".readme"))
+		(dest @default-dest)
+		(if (>= @user-level 2)(confirm))
+		(optional nofail force)
+		(nogauge)
+	)
+)
+
+(if (<> (exists "Plugins/Data") false)
+	(
+		(if (= (exists #data-dir) false)(makedir #data-dir))
+		(foreach "Plugins/Data/" "#?"
+			(if (= (exists (tackon #data-dir (fileonly @each-name))) false)
+				(copyfiles
+					(prompt #msg-data)
+					(help #msg-data-help)
+					(source (tackon "Plugins/Data" @each-name))
+					(dest #data-dir)
+					(if (>= @user-level 2)(confirm))
+					(optional nofail force)
+					(nogauge)
+				)
+			)
+		)
+	)
+)
+
+(if (<> (exists "Rexx") false)
+	(foreach "Rexx/" "#?"
+		(copylib
+			(prompt #msg-rexx)
+			(help #msg-rexx-help)
+			(source (tackon "Rexx" @each-name))
+			(dest #rexx-dir)
+			(if (>= @user-level 2)(confirm))
+			(optional nofail force)
+			(nogauge)
+		)
+	)
+)
+
+(textfile
+	(dest "T:UpdateAmirc.rexx")
+	(append (cat "/* Update a plugin */\n"
+		"ADDRESS COMMAND 'Version " @app-name ".AmIPlug >NIL:'\n"
+		"IF RC==0 THEN DO\n"
+			"j=0;DO i=1 TO 9;IF SHOW('P','AMIRC.'i) THEN j=j+1;END\n"
+		   "IF j=0 THEN EXIT\n"
+			"IF j=1 THEN DO\n"
+				"DO i=1 TO 9;IF SHOW('P','AMIRC.'i) THEN DO;ADDRESS VALUE 'AMIRC.'i;'SAY /RELOAD " @app-name "';END;END\n"
+				"EXIT\n"
+			"END\n"
+			"DO i=1 TO 9;IF SHOW('P','AMIRC.'i) THEN DO;ADDRESS VALUE 'AMIRC.'i;'SAY /UNLOAD " @app-name "';END;END\n"
+		"END\n"
+		"DO i=1 TO 9;IF SHOW('P','AMIRC.'i) THEN DO;ADDRESS VALUE 'AMIRC.'i;'SAY /LOAD " @app-name "';END;END\n"
+	))
+)
+(rexx "T:UpdateAmirc.rexx")
+(delete "T:UpdateAmirc.rexx")
+
+(complete 100)
+
+(exit #msg-exit (quiet))

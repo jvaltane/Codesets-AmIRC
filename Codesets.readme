@@ -1,0 +1,34 @@
+Short:    Codesets plugin for AmIRC 3+
+Author:   Joni Valtanen <jvaltane@kapsi.fi>
+Type:     comm/irc
+Requires: AmIRC 3+, Codesets library 6.2
+
+Codesets AmIRC plugin makes possible to use AmIRC with UTF-8 cabable
+IRC-clients. Conversion is done by Codesets library.
+
+Work is based on Robin Cloutmans Typo plugin (Typo.AmIPlug) and reuse
+its code. Source code is included in release package.
+
+Features:
+
+- able to swich on or off and ask status using /UTF8 command
+- converts all incoming rawlines from server (Rawline hook)
+- converts all incoming DCC chat lines from UTF8 to Amiga (DCCChat hook)
+- converts some special commands to UTF8. (/TOPIC, /AWAY, /QUIT...)
+- should work with multiple instances of AmIRC, but not tested
+
+List of commands converted to UTF8:
+
+/WHO, /AWAY, /OPER, /PART, /PASS, /QUIT, /USER, /TOPIC, /SETNAME, /WALLOPS
+
+Limits:
+
+- special command must be given from "commandline". For example if topic is
+  set textflied at top AmRC handles it internally and that does not work.
+- does not convert out going messages, but looks like servers or other
+  clients does the job. Another thing is that AmIRC handles message lines.
+  internally and provides messages without command part to hooks.
+- can not join channels which includes non-ascii characters. AmIRC handles
+  internally channel names and that causes problems when converting channels
+  to UTF8.
+

@@ -1,0 +1,5 @@
+IMPORTANT
+
+Headers in includes directory are not part of the software. amirc_plugin.h,
+SDI and Codesets. Those have own licenses and authors. Files are only
+included so people have the right ones in order to compile this plugin.
