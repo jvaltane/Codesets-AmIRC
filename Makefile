@@ -35,9 +35,9 @@ release: all
 	rm -f $(APP).lha
 	echo Copying to temporary directory...
 	mkdir -p $(APP)-AmIRC/Plugins $(APP)-AmIRC/Src
-	cp Install Install.info $(APP).readme LICENSE $(APP)-AmIRC/
+	cp Install Install.info $(APP)-AmIRC.readme LICENSE $(APP)-AmIRC/
 	cp $(APP).AmIPlug $(APP).AmIPlug_020 $(APP).AmIPlug_030 $(APP).AmIPlug_040 $(APP).AmIPlug_060 $(APP)-AmIRC/Plugins/
-	cp -r *.c *.h includes IMPORTANT $(APP).readme LICENSE $(APP)-AmIRC/Src/
+	cp -r *.c *.h includes IMPORTANT $(APP)-AmIRC.readme LICENSE $(APP)-AmIRC/Src/
 	echo Creating archive...
 	lha a -0o5 $(APP)-AmIRC.lha $(APP)-AmIRC
 	rm -rf $(APP)-AmIRC
