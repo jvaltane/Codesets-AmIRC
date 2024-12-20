@@ -37,6 +37,8 @@ List of commands converted to UTF8
 
 /WHO, /AWAY, /OPER, /PART, /PASS, /QUIT, /USER, /TOPIC, /SETNAME, /WALLOPS
 
+Only some commands are tested, not all.
+
 Use only "commandline" to these commands if it contains non-ascii characters.
 See Limits section why.
 
