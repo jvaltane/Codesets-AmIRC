@@ -1,34 +1,64 @@
-Short:    Codesets plugin for AmIRC 3+
-Author:   Joni Valtanen <jvaltane@kapsi.fi>
-Type:     comm/irc
-Requires: AmIRC 3+, Codesets library 6.2
+Short:        Codesets plugin for AmIRC 3+
+Author:       jvaltane@kapsi.fi (Joni Valtanen)
+Uploader:     jvaltane@kapsi.fi (Joni Valtanen)
+Type:         comm/irc
+Requires:     AmIRC 3+, Codesets library 6+
+Architecture: m68k-amigaos
+Version:      1.0
 
 Codesets AmIRC plugin makes possible to use AmIRC with UTF-8 cabable
-IRC-clients. Conversion is done by Codesets library.
+IRC-clients. Conversions are done by Codesets library. All incoming
+"lines" are converted from UTF8 to amiga codeset. Some outgoing lines
+are converted to UTF8. Servers or other clients seems to do message
+conversion. See Limits why some things are working as they are.
 
-Work is based on Robin Cloutmans Typo plugin (Typo.AmIPlug) and reuse
-its code. Source code is included in release package.
+Plugin is tested messages which contains nordic and German characters.
 
-Features:
+Work is based on Robin Cloutmans Typo plugin (Typo.AmIPlug) and reuse its
+code.
 
-- able to swich on or off and ask status using /UTF8 command
-- converts all incoming rawlines from server (Rawline hook)
-- converts all incoming DCC chat lines from UTF8 to Amiga (DCCChat hook)
-- converts some special commands to UTF8. (/TOPIC, /AWAY, /QUIT...)
-- should work with multiple instances of AmIRC, but not tested
+Source code is included in release package. There is also source repository
+at GitHub: https://github.com/jvaltane/Codesets-AmIRC
 
-List of commands converted to UTF8:
+Features
+
+* able to switch on or off and ask status using /UTF8 command
+* converts all incoming rawlines from server (Rawline hook)
+* converts all incoming DCC chat lines from UTF8 to Amiga (DCCChat hook)
+* converts some special commands to UTF8. (/TOPIC, /AWAY, /QUIT...)
+* should work with multiple instances of AmIRC, but not tested
+
+Requirements
+
+* AmIRC 3.0 or higher (3.9 tested)
+* Codesets library. (6.22 tested)
+
+List of commands converted to UTF8
 
 /WHO, /AWAY, /OPER, /PART, /PASS, /QUIT, /USER, /TOPIC, /SETNAME, /WALLOPS
 
-Limits:
+Use only "commandline" to these commands if it contains non-ascii characters.
+See Limits section why.
 
-- special command must be given from "commandline". For example if topic is
+Limits
+
+* Not all UTF8 characters are converted. Only what Amiga character set and
+  codesets supports.
+* special command must be given from "commandline". For example if topic is
   set textflied at top AmRC handles it internally and that does not work.
-- does not convert out going messages, but looks like servers or other
+* does not convert out going messages, but looks like servers or other
   clients does the job. Another thing is that AmIRC handles message lines.
   internally and provides messages without command part to hooks.
-- can not join channels which includes non-ascii characters. AmIRC handles
+* can not join channels which includes non-ascii characters. AmIRC handles
   internally channel names and that causes problems when converting channels
   to UTF8.
 
+For example. If want to use non-ascii characters at topic you should set it
+from "commandline" not topic inputfield at AmIRC. AmIRC does things internally
+and does not give plugins to control everything.
+
+Bugs
+
+If you find any bugs or want to add some commands to list of UTF8 converted
+commands, please report bug or feature to author. Even better is to report
+issue at GitHub.
