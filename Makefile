@@ -5,7 +5,7 @@ O_FILES = libinit$(EXT).o $(APP)$(EXT).o
 
 CC = m68k-amigaos-gcc
 STRIP = m68k-amigaos-strip
-FLAGS = -I. -Iincludes -g -nostdlib -Wall -O2 -fomit-frame-pointer -msmall-code
+FLAGS = -I. -Iincludes -g -nostdlib -Wall -O2 -fomit-frame-pointer -msmall-code -Wno-attributes
 CFLAGS = $(FLAGS)
 LFLAGS = $(FLAGS) -s
 
