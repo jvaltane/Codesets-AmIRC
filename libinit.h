@@ -20,46 +20,46 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#define	VERSION		1
-#define	REVISION		0
-#define	BETA			0
-#define	DATE			"14.12.2024"
-#define	NAME			"Codesets.AmIPlug"
-#define	AUTHOR		"Joni Valtanen <jvaltane@kapsi.fi>"
+#define VERSION 1
+#define REVISION 0
+#define BETA 0
+#define DATE "20.12.2024"
+#define NAME "Codesets.AmIPlug"
+#define AUTHOR "Joni Valtanen <jvaltane@kapsi.fi>"
 
-#if	defined(__mc68060__)
-#define	CPUSTR	"[060]"
-#elif	defined(__mc68040__)
-#define	CPUSTR	"[040]"
-#elif	defined(__mc68030__)
-#define	CPUSTR	"[030]"
-#elif	defined(__mc68020__)
-#define	CPUSTR	"[020]"
+#if defined(__mc68060__)
+# define CPUSTR "[060]"
+#elif defined(__mc68040__)
+# define CPUSTR "[040]"
+#elif defined(__mc68030__)
+# define CPUSTR "[030]"
+#elif defined(__mc68020__)
+# define CPUSTR "[020]"
 #else
-#define	CPUSTR	""
+# define CPUSTR ""
 #endif
 
-#define	VERS			"Codesets.AmIPlug" CPUSTR " 1.0"
-#define	SHORTVERS	"1.0"
-#define	VSTRING		VERS " (11.12.24)\r\n"
-#define	VERSTAG		"\0$VER: " VERS " (" DATE ")"
-#define	COPYRIGHT	"2024 Joni Valtanen <jvaltane@kapsi.fi>"
-#define	SVER			"$VER: " VERS " (" DATE ") ©" COPYRIGHT
+#define VERS "Codesets.AmIPlug" CPUSTR " 1.0"
+#define SHORTVERS "1.0"
+#define VSTRING	 VERS " (11.12.24)\r\n"
+#define VERSTAG "\0$VER: " VERS " (" DATE ")"
+#define COPYRIGHT "2024 Joni Valtanen <jvaltane@kapsi.fi>"
+#define SVER "$VER: " VERS " (" DATE ") ©" COPYRIGHT
 
 /* Any includes you want to make... */
-#include	"amirc_plugin.h"
+#include "amirc_plugin.h"
 
 /* The base structure for our library */
 struct myBase
 {
-	struct Library	mb_LibNode;
-	BPTR				mb_SegList;
+    struct Library	mb_LibNode;
+    BPTR mb_SegList;
 
-	/* Add your own entries after here */
+    /* Add your own entries after here */
 };
 
 /* These are called on first open/last close of the library */
 BOOL UserLibOpen( struct myBase *myBase );
 void UserLibClose( struct myBase *myBase );
 
-#endif	/* LIB_H */
+#endif /* LIB_H */
