@@ -164,8 +164,8 @@ int AMIPLUG_Hook_Rawline( REG(a0,struct amiplug_functable *ctx), REG(a1,STRPTR l
 #ifdef DEBUG
         PutStr("Rawline:'"); PutStr(dst); PutStr("'\n");
 #endif
-        /* This is kind of dirty trick. Assuption is that UTF8 is always
-           longer or same lenght than one-byte per char. -> Just
+        /* This is kind of a dirty trick. Assuption is that UTF8 is always
+           longer or same length than one-byte per char. -> Just
            overwrite current line
         */
         (void)strcpy ((char *)line, (const char *)dst); /* error handling: no */
@@ -216,7 +216,7 @@ void AMIPLUG_FinalSetup( REG(a0,struct amiplug_functable *ctx) )
 
 
 /*
- * Inclide ome commands from input conversion
+ * Include ome commands from input conversion
  */
 static int input_include (CONST STRPTR str)
 {
@@ -293,8 +293,8 @@ int AMIPLUG_Hook_DCCChat( REG(a0,struct amiplug_functable *ctx), REG(d0,ULONG dc
 #ifdef DEBUG
         PutStr("DCC:'"); PutStr(dst); PutStr("'\n");
 #endif
-        /* This is kind of dirty trick. Assuption is that UTF8 is always
-           longer or same lenght than one-byte per char. -> Just
+        /* This is kind of a dirty trick. Assuption is that UTF8 is always
+           longer or same length than one-byte per char. -> Just
            overwrite current line
         */
         (void)strcpy ((char *)line, (const char *)dst); /* error handling: no */
