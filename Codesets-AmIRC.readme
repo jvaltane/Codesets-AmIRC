@@ -6,7 +6,7 @@ Requires:     AmIRC 3+, Codesets library 6+
 Architecture: m68k-amigaos
 Version:      1.0
 
-Codesets AmIRC plugin makes possible to use AmIRC with UTF-8 cabable
+Codesets AmIRC plugin makes possible to use AmIRC with UTF-8 capable
 IRC-clients. Conversions are done by Codesets library. All incoming
 "lines" are converted from UTF8 to amiga codeset. Some outgoing lines
 are converted to UTF8. Servers or other clients seems to do message
@@ -14,7 +14,7 @@ conversion. See Limits why some things are working as they are.
 
 Plugin is tested messages which contains nordic and German characters.
 
-Work is based on Robin Cloutmans Typo plugin (Typo.AmIPlug) and reuse its
+Work is based on Robin Cloutmans Typo plugin (Typo.AmIPlug) and reuses its
 code.
 
 Source code is included in release package. There is also source repository
@@ -48,19 +48,19 @@ Limits
   codesets supports.
 * special command must be given from "commandline". For example if topic is
   set textflied at top AmRC handles it internally and that does not work.
-* does not convert out going messages, but looks like servers or other
+* does not convert outgoing messages, but looks like servers or other
   clients does the job. Another thing is that AmIRC handles message lines.
   internally and provides messages without command part to hooks.
 * can not join channels which includes non-ascii characters. AmIRC handles
-  internally channel names and that causes problems when converting channels
+  channel names internally and that causes problems when converting channels
   to UTF8.
 
-For example. If want to use non-ascii characters at topic you should set it
-from "commandline" not topic inputfield at AmIRC. AmIRC does things internally
-and does not give plugins to control everything.
+For example, if you want to use non-ascii characters at topic you should set
+it from "commandline" not topic input field at AmIRC. AmIRC does things
+internally and does not give plugins capability to control everything.
 
 Bugs
 
 If you find any bugs or want to add some commands to list of UTF8 converted
-commands, please report bug or feature to author. Even better is to report
+commands, please report a bug or a feature to author. Even better is to report
 issue at GitHub.
