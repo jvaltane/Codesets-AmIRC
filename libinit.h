@@ -23,7 +23,7 @@
 #define VERSION 1
 #define REVISION 0
 #define BETA 0
-#define DATE "20.12.2024"
+#define DATE "16.05.2026"
 #define NAME "Codesets.AmIPlug"
 #define AUTHOR "Joni Valtanen <jvaltane@kapsi.fi>"
 
@@ -41,9 +41,9 @@
 
 #define VERS "Codesets.AmIPlug" CPUSTR " 1.0"
 #define SHORTVERS "1.0"
-#define VSTRING	 VERS " (11.12.24)\r\n"
+#define VSTRING	 VERS " (16.04.26)\r\n"
 #define VERSTAG "\0$VER: " VERS " (" DATE ")"
-#define COPYRIGHT "2024 Joni Valtanen <jvaltane@kapsi.fi>"
+#define COPYRIGHT "2026 Joni Valtanen <jvaltane@kapsi.fi>"
 #define SVER "$VER: " VERS " (" DATE ") ©" COPYRIGHT
 
 /* Any includes you want to make... */
