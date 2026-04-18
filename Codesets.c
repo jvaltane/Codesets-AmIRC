@@ -97,6 +97,18 @@ int strnicmp( const char *a, const char *b, ULONG len )
     return 1; /* no match */
 }
 
+
+
+int findiso( const char *a, const char b)
+{
+    ULONG pos = 0;
+    ULONG len=strlen(a);
+    while( pos < len && *a) { if (*a==b) return 1;a++;pos++; };
+    return 0; /* no match */
+}
+
+
+
 /***************************************************************************/
 
 struct amiplug_cmd mycmd = {{NULL,NULL},"UTF8","[ON/OFF]", 1, 0, FALSE};
@@ -155,6 +167,8 @@ int AMIPLUG_Hook_Rawline( REG(a0,struct amiplug_functable *ctx), REG(a1,STRPTR l
         return 0;
     }
 
+if (findiso((const char*)line,0xe5)||findiso((const char*)line,0xe4)||findiso((const char*)line,0xf6)||findiso((const char*)line,0xc5)||findiso((const char*)line,0xc4)||findiso((const char*)line,0xd5))
+	return 0;
     dst = CodesetsConvertStr (CSA_SourceCodeset, (ULONG)data->serverCodeset,
                                 CSA_DestCodeset, (ULONG)data->amigaCodeset,
                                 CSA_Source, (ULONG)line,
@@ -244,7 +258,6 @@ char *AMIPLUG_Hook_Input( REG(a0,struct amiplug_functable *ctx), REG(a1,STRPTR s
         ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«Error»", (STRPTR)"Codesets: Invalid codeset to client or server." );
         return (char *)string;
     }
-
 #ifdef DEBUG
     PutStr("Input:'"); PutStr(string); PutStr("'\n");
 #endif
