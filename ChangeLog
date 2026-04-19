@@ -1,0 +1,13 @@
+2026-05-20  Joni Valtanen  <jvaltane@kapsi.fi>
+    * release 1.1
+    * update readme
+    * add ChangeLog
+
+2026-05-19  Joni Valtanen  <jvaltane@kapsi.fi>
+    * increase version number
+    * add support for UTF-8 auto detection. No need to convert outgoing
+    messages anymore. Fixes many limitations which previous version had.
+
+2026-05-16  Joni Valtanen  <jvaltane@kapsi.fi>
+    * release 1.0
+    * plugin implemented

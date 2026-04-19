@@ -4,15 +4,15 @@ Uploader:     jvaltane@kapsi.fi (Joni Valtanen)
 Type:         comm/irc
 Requires:     AmIRC 3+, Codesets library 6+
 Architecture: m68k-amigaos
-Version:      1.0
+Version:      1.1
 
-Codesets AmIRC plugin makes possible to use AmIRC with UTF8 capable
-IRC-clients. Conversions are done by Codesets library. All incoming
-"lines" are converted from UTF8 to amiga codeset. Some outgoing lines
-are converted to UTF8. Servers or other clients seems to do message
-conversion. See Limits why some things are working as they are.
+Codesets AmIRC plugin makes possible to use AmIRC with UTF-8 capable
+IRC-clients. Conversions are done by Codesets library. If required incoming
+"lines" are converted from UTF-8 to amiga codeset. No outgoing lines are
+converted to UTF-8. Servers or other clients seems to do message conversion.
+See Limits why some things are working as they are.
 
-Plugin is tested messages which contains nordic and German characters.
+Plugin is tested messages which contains Nordic and German characters.
 
 Work is based on Robin Cloutmans Typo plugin (Typo.AmIPlug) and reuses its
 code.
@@ -22,12 +22,12 @@ at GitHub: https://github.com/jvaltane/Codesets-AmIRC
 
 Features
 
-* able to switch on or off and ask status using /UTF8 command
-* by default UTF8 conversion is on
-* converts all incoming rawlines from server (Rawline hook)
-* converts all incoming DCC chat lines from UTF8 to Amiga (DCCChat hook)
-* converts some special commands to UTF8. (/TOPIC, /AWAY, /QUIT...)
-* should work with multiple instances of AmIRC, but not tested
+* able to switch mode to auto, on or off and ask status using /UTF8 command
+* by default UTF-8 conversion is in auto mode
+* when required converts incoming rawlines from server (Rawline hook)
+* when required converts incoming DCC chat lines from UTF-8 to Amiga
+  (DCCChat hook)
+* works multiple instances of AmIRC
 
 Requirements
 
@@ -36,11 +36,17 @@ Requirements
 
 Examples
 
-Ask UTF8 conversion status: /UTF8
-Set UTF8 conversion on:     /UTF8 ON
-Set UTF8 conversion off:    /UTF8 OFF
+Ask UTF-8 conversion status:       /UTF8
+Set UTF-8 conversion to auto mode: /UTF8 AUTO
+Set UTF-8 conversion on by force:  /UTF8 ON
+Set UTF-8 conversion off by force: /UTF8 OFF
 
-List of commands converted to UTF8
+Auto mode checks if message has any UTF-8 character and uses Codesets library
+only when it does.
+
+It is recommended to use auto mode.
+
+List of commands possibly converted to UTF-8
 
 /WHO, /AWAY, /OPER, /PART, /PASS, /QUIT, /USER, /TOPIC, /SETNAME, /WALLOPS
 
@@ -51,23 +57,23 @@ See Limits section why.
 
 Limits
 
-* Not all UTF8 characters are converted. Only what Amiga character set and
+* Not all UTF-8 characters are converted. Only what Amiga character set and
   codesets supports.
-* special command must be given from "commandline". For example if topic is
-  set textflied at top AmRC handles it internally and that does not work.
 * does not convert outgoing messages, but looks like servers or other
   clients does the job. Another thing is that AmIRC handles message lines.
   internally and provides messages without command part to hooks.
-* can not join channels which includes non-ascii characters. AmIRC handles
-  channel names internally and that causes problems when converting channels
-  to UTF8.
-
-For example, if you want to use non-ascii characters at topic you should set
-it from "commandline" not topic input field at AmIRC. AmIRC does things
-internally and does not give plugins capability to control everything.
 
 Bugs
 
 If you find any bugs or want to add some commands to list of UTF8 converted
 commands, please report a bug or a feature to author. Even better is to
 report issue at GitHub.
+
+Thanks to
+
+Mika "Exploderi" Yrjöla
+  Initial spell check 
+
+Michael Grunditz
+  Pointing out that all messages does not need to be converted. Fixes leaded
+  to auto mode, which fixed many problems what version 1.0 had.
