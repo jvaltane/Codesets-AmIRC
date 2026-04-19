@@ -4,7 +4,7 @@ Uploader:     jvaltane@kapsi.fi (Joni Valtanen)
 Type:         comm/irc
 Requires:     AmIRC 3+, Codesets library 6+
 Architecture: m68k-amigaos
-Version:      1.1
+Version:      1.2
 
 Codesets AmIRC plugin makes possible to use AmIRC with UTF-8 capable
 IRC-clients. Conversions are done by Codesets library. If required incoming
