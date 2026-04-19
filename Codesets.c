@@ -35,7 +35,7 @@
 #define INFO "Simple UTF-8 support using codesets.library"
 #define SETUPNAME "Codesets"
 
-/* #define DEBUG */
+//#define DEBUG 
 
 /***************************************************************************/
 
@@ -84,7 +84,7 @@ int strlen( const char *a )
 
 char *strcpy( char *a, const char *b )
 {
-    while( ( *a++ = *b++ ) );
+    while( ( *a++ = *b++ )  );
     return(--a);
 }
 
@@ -103,7 +103,12 @@ int findiso( const char *a)
 {
     ULONG pos = 0;
     ULONG len=strlen(a);
-    while( pos < len && *a) { if (*a==0xe5||*a==0xe4||*a==0xf6||*a==0xc5||*a==0xc4||*a==0xd5) return 1;a++;pos++; };
+    while( pos < len && *a) { 
+	    if (*a==0xe5||*a==0xe4||*a==0xf6||*a==0xc5||*a==0xc4||*a==0xd5) 
+		    return 1;
+	    a++;
+	    pos++; 
+    }
     return 0; /* no match */
 }
 
@@ -168,6 +173,7 @@ int AMIPLUG_Hook_Rawline( REG(a0,struct amiplug_functable *ctx), REG(a1,STRPTR l
     }
 if (findiso((const char*)line))
 	return 0;
+        
     dst = CodesetsConvertStr (CSA_SourceCodeset, (ULONG)data->serverCodeset,
                                 CSA_DestCodeset, (ULONG)data->amigaCodeset,
                                 CSA_Source, (ULONG)line,
