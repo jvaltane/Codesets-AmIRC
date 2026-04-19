@@ -99,11 +99,11 @@ int strnicmp( const char *a, const char *b, ULONG len )
 
 
 
-int findiso( const char *a, const char b)
+int findiso( const char *a)
 {
     ULONG pos = 0;
     ULONG len=strlen(a);
-    while( pos < len && *a) { if (*a==b) return 1;a++;pos++; };
+    while( pos < len && *a) { if (*a==0xe5||*a==0xe4||*a==0xf6||*a==0xc5||*a==0xc4||*a==0xd5) return 1;a++;pos++; };
     return 0; /* no match */
 }
 
@@ -166,8 +166,7 @@ int AMIPLUG_Hook_Rawline( REG(a0,struct amiplug_functable *ctx), REG(a1,STRPTR l
         ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«Error»", (STRPTR)"Codesets: Invalid codeset to client or server." );
         return 0;
     }
-
-if (findiso((const char*)line,0xe5)||findiso((const char*)line,0xe4)||findiso((const char*)line,0xf6)||findiso((const char*)line,0xc5)||findiso((const char*)line,0xc4)||findiso((const char*)line,0xd5))
+if (findiso((const char*)line))
 	return 0;
     dst = CodesetsConvertStr (CSA_SourceCodeset, (ULONG)data->serverCodeset,
                                 CSA_DestCodeset, (ULONG)data->amigaCodeset,
