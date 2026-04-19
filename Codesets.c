@@ -45,12 +45,18 @@ struct Library *CodesetsBase = NULL;
 #ifdef DEBUG
 struct DosLibrary *DOSBase = NULL;
 #endif
+typedef enum {
+    UTF8_STATUS_AUTO, /* check if utf8 */
+    UTF8_STATUS_ON,   /* force on */
+    UTF8_STATUS_OFF   /* force off */
+} Utf8Status;
+
 struct PrivateData
 {
     struct codeset *amigaCodeset;
     struct codeset *serverCodeset;
     STRPTR buffer;
-    BOOL inUse;
+    Utf8Status status;
 };
 
 BOOL UserLibOpen( struct myBase *myBase )
@@ -75,26 +81,56 @@ void UserLibClose( struct myBase *myBase )
 /***************************************************************************/
 static inline char lower( const char c ) { return(c>='A'&&c<='Z'?c+'a'-'A':c); }
 
-int strlen( const char *a )
+static int strlen( const char *a )
 {
     int n = 0;
     while( *a++ )n++;
     return(n);
 }
 
-char *strcpy( char *a, const char *b )
+static char *strcpy( char *a, const char *b )
 {
     while( ( *a++ = *b++ ) );
     return(--a);
 }
 
 /* be carefull with this!!! */
-int strnicmp( const char *a, const char *b, ULONG len )
+static int strnicmp( const char *a, const char *b, ULONG len )
 {
     ULONG pos = 0;
     while( pos < len && *a && *b && lower(*a)==lower(*b) ) { a++,b++,pos++; };
     if (pos == (len - 1)) return 0; /* match */
     return 1; /* no match */
+}
+
+static BOOL isUTF8(STRPTR line, LONG len)
+{
+    ULONG pos = 0;
+    while (len > 1) {
+        if (((line[pos] & 0xe0) == 0xc0) &&
+            ((line[pos+1] & 0xc0) == 0x80)) {
+            return TRUE;
+        }
+        if (len > 2) {
+            if (((line[pos] & 0xf0) == 0xe0) &&
+                ((line[pos+1] & 0xc0) == 0x80) &&
+                ((line[pos+2] & 0xc0) == 0x80)) {
+                return TRUE;
+            }
+        }
+        if (len > 3) {
+            if (((line[pos] & 0xf8) == 0xf0) && 
+                ((line[pos+1] & 0xc0) == 0x80) && 
+                ((line[pos+2] & 0xc0) == 0x80) && 
+                ((line[pos+1] & 0xc0) == 0x80)) {
+                return TRUE;
+            }
+        }
+        ++pos;
+        --len;
+    }
+    /* ascii or invalid UTF8 */
+    return FALSE;
 }
 
 /***************************************************************************/
@@ -127,7 +163,7 @@ struct TagItem *AMIPLUG_Setup( REG(a0,struct amiplug_functable *ctx) )
         data->amigaCodeset = CodesetsFindA(NULL, NULL);
         data->serverCodeset = CodesetsFind((STRPTR)"UTF-8", CSA_FallbackToDefault, FALSE, TAG_DONE);
         data->buffer = NULL;
-        data->inUse = TRUE;
+        data->status = UTF8_STATUS_AUTO;
         ctx->userdata = data;
     }
     return( mytaglist );
@@ -149,7 +185,17 @@ int AMIPLUG_Hook_Rawline( REG(a0,struct amiplug_functable *ctx), REG(a1,STRPTR l
 {
     STRPTR dst;
     struct PrivateData *data = (struct PrivateData *)ctx->userdata;
-    if (!(data && data->inUse)) return 0;
+
+    if (!data) {
+        return 0;
+    } else if (data->status == UTF8_STATUS_OFF) {
+        return 0;
+    } else if (data->status == UTF8_STATUS_AUTO) {
+        if (FALSE == isUTF8(line, len) ) {
+            return 0;
+        }
+    };
+
     if (!(data->amigaCodeset && data->serverCodeset)) {
         ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«Error»", (STRPTR)"Codesets: Invalid codeset to client or server." );
         return 0;
@@ -186,16 +232,19 @@ void AMIPLUG_DoCommand( REG(a0,struct amiplug_functable *ctx), REG(d0,ULONG comm
 
     if (parms->parms) {
         if (strnicmp((const char *)"ON", (const char *)parms->parms, 3) == 0) {
-            data->inUse = TRUE;
+            data->status = UTF8_STATUS_ON;
         } else if (strnicmp((const char *)"OFF", (const char *)parms->parms, 4) == 0) {
-            data->inUse = FALSE;
+            data->status = UTF8_STATUS_OFF;
+        } else if (strnicmp((const char *)"AUTO", (const char *)parms->parms, 5) == 0) {
+            data->status = UTF8_STATUS_AUTO;
         } else {
             ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«Error»", (STRPTR)"Usage: /UTF8 [ON/OFF]" );
             return;
         }
     }
-    if (data->inUse) ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"Is ON" );
-    else ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"Is OFF" );
+    if (data->status == UTF8_STATUS_AUTO) ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"Status: AUTO" );
+    else if (data->status == UTF8_STATUS_ON) ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"Status: ON" );
+    else ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"Status: OFF" );
 }
 
 void AMIPLUG_DoMenu( REG(a0,struct amiplug_functable *ctx), REG(d0,ULONG commandid), REG(a1,APTR muiapp) )
@@ -239,7 +288,13 @@ static int input_include (CONST STRPTR str)
 char *AMIPLUG_Hook_Input( REG(a0,struct amiplug_functable *ctx), REG(a1,STRPTR string), REG(d0,ULONG len) )
 {
     struct PrivateData *data = (struct PrivateData *)ctx->userdata;
-    if (!(data && data->inUse)) return (char *)string;
+    if (data->status == UTF8_STATUS_OFF) {
+        return (char *)string;
+    } else if (data->status == UTF8_STATUS_AUTO) {
+        if (FALSE == isUTF8(string, len)) {
+            return (char *)string;
+        }
+    }
     if (!(data->amigaCodeset && data->serverCodeset)) {
         ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«Error»", (STRPTR)"Codesets: Invalid codeset to client or server." );
         return (char *)string;
@@ -278,7 +333,14 @@ int AMIPLUG_Hook_DCCChat( REG(a0,struct amiplug_functable *ctx), REG(d0,ULONG dc
 {
     STRPTR dst;
     struct PrivateData *data = (struct PrivateData *)ctx->userdata;
-    if (!(data && data->inUse)) return 0;
+    if (data->status == UTF8_STATUS_OFF) {
+        return 0;
+    } else if (data->status == UTF8_STATUS_AUTO) {
+        if (FALSE == isUTF8(line, len)) {
+            return 0;
+        }
+    }
+
     if (!(data->amigaCodeset && data->serverCodeset)) {
         ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«Error»", (STRPTR)"Codesets: Invalid codeset to client or server." );
         return 0;
