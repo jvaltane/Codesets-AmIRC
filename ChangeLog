@@ -1,4 +1,8 @@
 2026-05-20  Joni Valtanen  <jvaltane@kapsi.fi>
+    * increase version number
+    * fix small bug in UTF-8 detection
+
+2026-05-20  Joni Valtanen  <jvaltane@kapsi.fi>
     * release 1.1
     * update readme
     * add ChangeLog

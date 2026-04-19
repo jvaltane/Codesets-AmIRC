@@ -122,7 +122,7 @@ static BOOL isUTF8(STRPTR line, LONG len)
             if (((line[pos] & 0xf8) == 0xf0) && 
                 ((line[pos+1] & 0xc0) == 0x80) && 
                 ((line[pos+2] & 0xc0) == 0x80) && 
-                ((line[pos+1] & 0xc0) == 0x80)) {
+                ((line[pos+3] & 0xc0) == 0x80)) {
                 return TRUE;
             }
         }

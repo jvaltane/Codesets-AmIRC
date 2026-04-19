@@ -21,7 +21,7 @@
 */
 
 #define VERSION 1
-#define REVISION 1
+#define REVISION 2
 #define BETA 0
 #define DATE "20.05.2026"
 #define NAME "Codesets.AmIPlug"
@@ -39,7 +39,7 @@
 # define CPUSTR ""
 #endif
 
-#define VERS "Codesets.AmIPlug" CPUSTR " 1.1"
+#define VERS "Codesets.AmIPlug" CPUSTR " 1.2"
 #define SHORTVERS "1.1"
 #define VSTRING	 VERS " (20.04.26)\r\n"
 #define VERSTAG "\0$VER: " VERS " (" DATE ")"
