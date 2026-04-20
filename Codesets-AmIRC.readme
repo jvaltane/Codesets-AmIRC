@@ -12,7 +12,8 @@ IRC-clients. Conversions are done by Codesets library. If required incoming
 converted to UTF-8. Servers or other clients seems to do message conversion.
 See Limits why some things are working as they are.
 
-Plugin is tested messages which contains Nordic and German characters.
+Plugin is tested messages which contains some Nordic, German, Spanish and
+Italian characters.
 
 Work is based on Robin Cloutmans Typo plugin (Typo.AmIPlug) and reuses its
 code.
@@ -22,38 +23,26 @@ at GitHub: https://github.com/jvaltane/Codesets-AmIRC
 
 Features
 
-* able to switch mode to auto, on or off and ask status using /UTF8 command
-* by default UTF-8 conversion is in auto mode
+* able to switch mode to on or off and ask status using /UTF8 command
+* by default UTF-8 conversion is in on
 * when required converts incoming rawlines from server (Rawline hook)
 * when required converts incoming DCC chat lines from UTF-8 to Amiga
   (DCCChat hook)
-* works multiple instances of AmIRC
+* works with multiple instances of AmIRC
 
 Requirements
 
-* AmIRC 3.0 or higher (3.9 tested)
+* AmIRC 3.0 or higher (3.6.x and 3.9 tested)
 * Codesets library. (6.22 tested)
 
 Examples
 
-Ask UTF-8 conversion status:       /UTF8
-Set UTF-8 conversion to auto mode: /UTF8 AUTO
-Set UTF-8 conversion on by force:  /UTF8 ON
-Set UTF-8 conversion off by force: /UTF8 OFF
+Ask UTF-8 conversion status:        /UTF8
+Set UTF-8 conversion when required: /UTF8 ON
+Set UTF-8 conversion off by force:  /UTF8 OFF
 
-Auto mode checks if message has any UTF-8 character and uses Codesets library
-only when it does.
-
-It is recommended to use auto mode.
-
-List of commands possibly converted to UTF-8
-
-/WHO, /AWAY, /OPER, /PART, /PASS, /QUIT, /USER, /TOPIC, /SETNAME, /WALLOPS
-
-Only some commands are tested, not all.
-
-Use only "commandline" to these commands if it contains non-ascii characters.
-See Limits section why.
+When mode is set to on plugin checks if message has any UTF-8 character and
+uses Codesets library only when it does.
 
 Limits
 
@@ -75,5 +64,6 @@ Mika "Exploderi" Yrjöla
   Initial spell check 
 
 Michael Grunditz
-  Pointing out that all messages does not need to be converted. Fixes leaded
-  to auto mode, which fixed many problems what version 1.0 had.
+  Pointing out that all messages does not need to be converted. Fixes lead to
+  implementation which checks if conversion is needed. Fixed many problems
+  what version 1.0 had.

@@ -45,18 +45,13 @@ struct Library *CodesetsBase = NULL;
 #ifdef DEBUG
 struct DosLibrary *DOSBase = NULL;
 #endif
-typedef enum {
-    UTF8_STATUS_AUTO, /* check if utf8 */
-    UTF8_STATUS_ON,   /* force on */
-    UTF8_STATUS_OFF   /* force off */
-} Utf8Status;
 
 struct PrivateData
 {
     struct codeset *amigaCodeset;
     struct codeset *serverCodeset;
     STRPTR buffer;
-    Utf8Status status;
+    BOOL isOn;
 };
 
 BOOL UserLibOpen( struct myBase *myBase )
@@ -80,13 +75,6 @@ void UserLibClose( struct myBase *myBase )
 
 /***************************************************************************/
 static inline char lower( const char c ) { return(c>='A'&&c<='Z'?c+'a'-'A':c); }
-
-static int strlen( const char *a )
-{
-    int n = 0;
-    while( *a++ )n++;
-    return(n);
-}
 
 static char *strcpy( char *a, const char *b )
 {
@@ -163,7 +151,7 @@ struct TagItem *AMIPLUG_Setup( REG(a0,struct amiplug_functable *ctx) )
         data->amigaCodeset = CodesetsFindA(NULL, NULL);
         data->serverCodeset = CodesetsFind((STRPTR)"UTF-8", CSA_FallbackToDefault, FALSE, TAG_DONE);
         data->buffer = NULL;
-        data->status = UTF8_STATUS_AUTO;
+        data->isOn = TRUE;
         ctx->userdata = data;
     }
     return( mytaglist );
@@ -188,9 +176,9 @@ int AMIPLUG_Hook_Rawline( REG(a0,struct amiplug_functable *ctx), REG(a1,STRPTR l
 
     if (!data) {
         return 0;
-    } else if (data->status == UTF8_STATUS_OFF) {
+    } else if (data->isOn == FALSE) {
         return 0;
-    } else if (data->status == UTF8_STATUS_AUTO) {
+    } else {
         if (FALSE == isUTF8(line, len) ) {
             return 0;
         }
@@ -232,18 +220,15 @@ void AMIPLUG_DoCommand( REG(a0,struct amiplug_functable *ctx), REG(d0,ULONG comm
 
     if (parms->parms) {
         if (strnicmp((const char *)"ON", (const char *)parms->parms, 3) == 0) {
-            data->status = UTF8_STATUS_ON;
+            data->isOn = TRUE;
         } else if (strnicmp((const char *)"OFF", (const char *)parms->parms, 4) == 0) {
-            data->status = UTF8_STATUS_OFF;
-        } else if (strnicmp((const char *)"AUTO", (const char *)parms->parms, 5) == 0) {
-            data->status = UTF8_STATUS_AUTO;
+            data->isOn = FALSE;
         } else {
             ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«Error»", (STRPTR)"Usage: /UTF8 [ON/OFF]" );
             return;
         }
     }
-    if (data->status == UTF8_STATUS_AUTO) ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"Status: AUTO" );
-    else if (data->status == UTF8_STATUS_ON) ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"Status: ON" );
+    if (data->isOn == TRUE) ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"Status: ON" );
     else ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"Status: OFF" );
 }
 
@@ -263,34 +248,12 @@ void AMIPLUG_FinalSetup( REG(a0,struct amiplug_functable *ctx) )
 {
 }
 
-
-/*
- * Include ome commands from input conversion
- */
-static int input_include (CONST STRPTR str)
-{
-    if (strlen((const char *)str) < 2) return 1;
-
-    /* NULL-terminations are checked in purpose */
-    if (strnicmp((const char *)"/WHO ", (const char *)str, 6) == 0) return 0;
-    else if (strnicmp((const char *)"/AWAY ", (const char *)str, 7) == 0) return 0;
-    else if (strnicmp((const char *)"/OPER ", (const char *)str, 7) == 0) return 0;
-    else if (strnicmp((const char *)"/PART ", (const char *)str, 7) == 0) return 0;
-    else if (strnicmp((const char *)"/PASS ", (const char *)str, 7) == 0) return 0;
-    else if (strnicmp((const char *)"/QUIT ", (const char *)str, 7) == 0) return 0;
-    else if (strnicmp((const char *)"/USER ", (const char *)str, 7) == 0) return 0;
-    else if (strnicmp((const char *)"/TOPIC ", (const char *)str, 8) == 0) return 0;
-    else if (strnicmp((const char *)"/SETNAME ", (const char *)str, 10) == 0) return 0;
-    else if (strnicmp((const char *)"/WALLOPS ", (const char *)str, 10) == 0) return 0;
-    return 1;
-}
-
 char *AMIPLUG_Hook_Input( REG(a0,struct amiplug_functable *ctx), REG(a1,STRPTR string), REG(d0,ULONG len) )
 {
     struct PrivateData *data = (struct PrivateData *)ctx->userdata;
-    if (data->status == UTF8_STATUS_OFF) {
+    if (data->isOn == FALSE) {
         return (char *)string;
-    } else if (data->status == UTF8_STATUS_AUTO) {
+    } else {
         if (FALSE == isUTF8(string, len)) {
             return (char *)string;
         }
@@ -303,21 +266,15 @@ char *AMIPLUG_Hook_Input( REG(a0,struct amiplug_functable *ctx), REG(a1,STRPTR s
 #ifdef DEBUG
     PutStr("Input:'"); PutStr(string); PutStr("'\n");
 #endif
-    if (input_include(string) == 0) {
-#ifdef DEBUG
-        PutStr("Convert\n");
-#endif
-        if (data->buffer) {
-            CodesetsFreeA(data->buffer, NULL);
-        }
-        data->buffer = CodesetsConvertStr (CSA_SourceCodeset, (ULONG)data->amigaCodeset,
-                                          CSA_DestCodeset, (ULONG)data->serverCodeset,
-                                          CSA_Source, (ULONG)string,
-                                          CSA_SourceLen, len,
-                                          TAG_DONE);
-        return (char *)data->buffer;
+    if (data->buffer) {
+        CodesetsFreeA(data->buffer, NULL);
     }
-    return (char *)string;
+    data->buffer = CodesetsConvertStr (CSA_SourceCodeset, (ULONG)data->amigaCodeset,
+                                    CSA_DestCodeset, (ULONG)data->serverCodeset,
+                                    CSA_Source, (ULONG)string,
+                                    CSA_SourceLen, len,
+                                    TAG_DONE);
+    return (char *)data->buffer;
 }
 
 int AMIPLUG_DoRexx( REG(a0,struct amiplug_functable *ctx), REG(d0,ULONG commandid), REG(a1,STRPTR *args), REG(a2,APTR muiapp) )
@@ -333,9 +290,9 @@ int AMIPLUG_Hook_DCCChat( REG(a0,struct amiplug_functable *ctx), REG(d0,ULONG dc
 {
     STRPTR dst;
     struct PrivateData *data = (struct PrivateData *)ctx->userdata;
-    if (data->status == UTF8_STATUS_OFF) {
+    if (data->isOn == FALSE) {
         return 0;
-    } else if (data->status == UTF8_STATUS_AUTO) {
+    } else {
         if (FALSE == isUTF8(line, len)) {
             return 0;
         }

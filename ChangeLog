@@ -1,6 +1,8 @@
 2026-05-20  Joni Valtanen  <jvaltane@kapsi.fi>
     * increase version number
     * fix small bug in UTF-8 detection
+    * back to on/off mode. On is old auto
+    * update readme
 
 2026-05-20  Joni Valtanen  <jvaltane@kapsi.fi>
     * release 1.1
