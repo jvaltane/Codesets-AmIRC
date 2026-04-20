@@ -228,8 +228,8 @@ void AMIPLUG_DoCommand( REG(a0,struct amiplug_functable *ctx), REG(d0,ULONG comm
             return;
         }
     }
-    if (data->isOn == TRUE) ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"Status: ON" );
-    else ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"Status: OFF" );
+    if (data->isOn == TRUE) ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"is ON" );
+    else ctx->amiplug_out_defwin( ctx, amirc_tc_local, (STRPTR)"\eb«UTF8»", (STRPTR)"is OFF" );
 }
 
 void AMIPLUG_DoMenu( REG(a0,struct amiplug_functable *ctx), REG(d0,ULONG commandid), REG(a1,APTR muiapp) )
